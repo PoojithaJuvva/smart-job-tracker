@@ -1,13 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        IMAGE_BACKEND  = "smart-job-tracker-backend"
-        IMAGE_FRONTEND = "smart-job-tracker-frontend"
-        REGISTRY       = credentials('docker-registry-url')   // configure in Jenkins credentials
-        DOCKERHUB_CRED = credentials('dockerhub-credentials') // configure in Jenkins credentials
-    }
-
     options {
         timestamps()
         buildDiscarder(logRotator(numToKeepStr: '10'))
@@ -21,28 +14,20 @@ pipeline {
             }
         }
 
-        stage('Backend: Install & Lint') {
+        stage('Install Dependencies') {
             steps {
                 dir('backend') {
-                    sh '''
-                        python3 -m venv venv
-                        . venv/bin/activate
-                        pip install --upgrade pip
-                        pip install -r requirements.txt
-                        pip install flake8
-                        flake8 app --max-line-length=110 --exit-zero
-                    '''
+                    bat 'python -m venv venv'
+                    bat 'venv\\Scripts\\pip install --upgrade pip'
+                    bat 'venv\\Scripts\\pip install -r requirements.txt'
                 }
             }
         }
 
-        stage('Backend: Run Tests (pytest)') {
+        stage('Run Tests') {
             steps {
                 dir('backend') {
-                    sh '''
-                        . venv/bin/activate
-                        pytest --cov=app --cov-report=xml --junitxml=test-results.xml
-                    '''
+                    bat 'venv\\Scripts\\pytest --junitxml=test-results.xml'
                 }
             }
             post {
@@ -52,50 +37,31 @@ pipeline {
             }
         }
 
+        stage('Stop Old Containers') {
+            steps {
+                bat 'docker compose down || exit 0'
+            }
+        }
+
         stage('Build Docker Images') {
             steps {
-                script {
-                    sh "docker build -t ${IMAGE_BACKEND}:${BUILD_NUMBER} ./backend"
-                    sh "docker build -t ${IMAGE_FRONTEND}:${BUILD_NUMBER} ./frontend"
-                    sh "docker tag ${IMAGE_BACKEND}:${BUILD_NUMBER} ${IMAGE_BACKEND}:latest"
-                    sh "docker tag ${IMAGE_FRONTEND}:${BUILD_NUMBER} ${IMAGE_FRONTEND}:latest"
-                }
+                bat 'docker compose build'
             }
         }
 
-        stage('Push Images') {
-            when { branch 'main' }
+        stage('Run Containers') {
             steps {
-                sh '''
-                    echo "$DOCKERHUB_CRED_PSW" | docker login -u "$DOCKERHUB_CRED_USR" --password-stdin
-                    docker tag smart-job-tracker-backend:latest $DOCKERHUB_CRED_USR/smart-job-tracker-backend:latest
-                    docker tag smart-job-tracker-frontend:latest $DOCKERHUB_CRED_USR/smart-job-tracker-frontend:latest
-                    docker push $DOCKERHUB_CRED_USR/smart-job-tracker-backend:latest
-                    docker push $DOCKERHUB_CRED_USR/smart-job-tracker-frontend:latest
-                '''
-            }
-        }
-
-        stage('Deploy') {
-            when { branch 'main' }
-            steps {
-                sh '''
-                    docker compose -f docker-compose.yml pull backend frontend
-                    docker compose -f docker-compose.yml up -d --no-deps backend frontend
-                '''
+                bat 'docker compose up -d'
             }
         }
     }
 
     post {
         success {
-            echo "Build #${BUILD_NUMBER} succeeded — tests passed, images built and deployed."
+            echo "Build #${BUILD_NUMBER} succeeded — tests passed, containers rebuilt and running."
         }
         failure {
             echo "Build #${BUILD_NUMBER} failed — check the stage logs above."
-        }
-        always {
-            sh 'docker system prune -f || true'
         }
     }
 }
