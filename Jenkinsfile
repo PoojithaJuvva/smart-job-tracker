@@ -36,29 +36,11 @@ pipeline {
                 }
             }
         }
-
-        stage('Stop Old Containers') {
-            steps {
-                bat 'docker compose down || exit 0'
-            }
-        }
-
-        stage('Build Docker Images') {
-            steps {
-                bat 'docker compose build'
-            }
-        }
-
-        stage('Run Containers') {
-            steps {
-                bat 'docker compose up -d'
-            }
-        }
     }
 
     post {
         success {
-            echo "Build #${BUILD_NUMBER} succeeded — tests passed, containers rebuilt and running."
+            echo "Build #${BUILD_NUMBER} succeeded — dependencies installed and all tests passed. Run 'docker compose up --build' manually to build and deploy containers."
         }
         failure {
             echo "Build #${BUILD_NUMBER} failed — check the stage logs above."
