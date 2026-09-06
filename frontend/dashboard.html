@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Job Tracker — Dashboard</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">JT</span>
+        <span class="brand-name">Job Tracker</span>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="overview">Overview</button>
+        <button class="nav-item" data-view="board">Pipeline Board</button>
+        <button class="nav-item" data-view="list">All Applications</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div id="user-name" class="user-chip">—</div>
+        <button id="logout-btn" class="btn-ghost">Log out</button>
+      </div>
+    </aside>
+
+    <main class="content">
+      <!-- OVERVIEW -->
+      <section id="view-overview" class="view">
+        <header class="content-header">
+          <h1>Overview</h1>
+          <button class="btn-primary" id="open-add-modal-1">+ New Application</button>
+        </header>
+
+        <div class="stat-grid" id="stat-grid">
+          <div class="stat-card"><div class="stat-value" id="stat-total">0</div><div class="stat-label">Total Applications</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-response">0%</div><div class="stat-label">Response Rate</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-offer">0%</div><div class="stat-label">Offer Rate</div></div>
+          <div class="stat-card"><div class="stat-value" id="stat-interviews">0</div><div class="stat-label">Upcoming Interviews</div></div>
+        </div>
+
+        <div class="panel">
+          <h2>Status Breakdown</h2>
+          <div id="status-breakdown" class="status-breakdown"></div>
+        </div>
+
+        <div class="panel">
+          <h2>Upcoming Interviews</h2>
+          <ul id="upcoming-list" class="upcoming-list"><li class="empty">Nothing scheduled yet.</li></ul>
+        </div>
+      </section>
+
+      <!-- BOARD -->
+      <section id="view-board" class="view hidden">
+        <header class="content-header">
+          <h1>Pipeline Board</h1>
+          <button class="btn-primary" id="open-add-modal-2">+ New Application</button>
+        </header>
+        <div class="board" id="board"></div>
+      </section>
+
+      <!-- LIST -->
+      <section id="view-list" class="view hidden">
+        <header class="content-header">
+          <h1>All Applications</h1>
+          <div class="header-actions">
+            <input type="search" id="search-input" placeholder="Search company or role..." />
+            <select id="status-filter">
+              <option value="">All statuses</option>
+            </select>
+            <button class="btn-secondary" id="export-csv-btn">Export CSV</button>
+            <button class="btn-primary" id="open-add-modal-3">+ New Application</button>
+          </div>
+        </header>
+        <table class="app-table">
+          <thead>
+            <tr>
+              <th>Company</th><th>Role</th><th>Status</th><th>Applied</th><th>Location</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="app-table-body"></tbody>
+        </table>
+        <div class="pagination" id="pagination"></div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ADD/EDIT MODAL -->
+  <div id="app-modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">New Application</h2>
+        <button class="modal-close" id="modal-close">&times;</button>
+      </div>
+      <form id="app-form">
+        <input type="hidden" id="app-id" />
+        <div class="form-row">
+          <div><label>Company</label><input type="text" id="field-company" required /></div>
+          <div><label>Role</label><input type="text" id="field-role" required /></div>
+        </div>
+        <div class="form-row">
+          <div><label>Status</label><select id="field-status"></select></div>
+          <div><label>Applied Date</label><input type="date" id="field-applied-date" /></div>
+        </div>
+        <div class="form-row">
+          <div><label>Location</label><input type="text" id="field-location" /></div>
+          <div><label>Salary Range</label><input type="text" id="field-salary" /></div>
+        </div>
+        <div class="form-row">
+          <div><label>Interview Date/Time</label><input type="datetime-local" id="field-interview-date" /></div>
+          <div><label>Job Link</label><input type="url" id="field-job-link" /></div>
+        </div>
+        <label>Notes</label>
+        <textarea id="field-notes" rows="3"></textarea>
+        <div class="modal-actions">
+          <button type="button" class="btn-danger hidden" id="delete-app-btn">Delete</button>
+          <div class="spacer"></div>
+          <button type="button" class="btn-ghost" id="cancel-modal-btn">Cancel</button>
+          <button type="submit" class="btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

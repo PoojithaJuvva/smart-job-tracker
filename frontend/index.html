@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Job Tracker — Sign In</title>
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="auth-body">
+  <div class="auth-card">
+    <div class="brand">
+      <span class="brand-mark">JT</span>
+      <span class="brand-name">Smart Job Tracker</span>
+    </div>
+    <p class="tagline">Track applications like a hiring pipeline, not a spreadsheet.</p>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="login">Sign In</button>
+      <button class="tab-btn" data-tab="register">Create Account</button>
+    </div>
+
+    <form id="login-form" class="auth-form">
+      <label>Email</label>
+      <input type="email" id="login-email" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="login-password" required placeholder="••••••••" />
+      <div class="form-error" id="login-error"></div>
+      <button type="submit" class="btn-primary">Sign In</button>
+    </form>
+
+    <form id="register-form" class="auth-form hidden">
+      <label>Full Name</label>
+      <input type="text" id="register-name" required placeholder="Poojitha Juvva" />
+      <label>Email</label>
+      <input type="email" id="register-email" required placeholder="you@example.com" />
+      <label>Password</label>
+      <input type="password" id="register-password" required minlength="6" placeholder="At least 6 characters" />
+      <div class="form-error" id="register-error"></div>
+      <button type="submit" class="btn-primary">Create Account</button>
+    </form>
+
+    <p class="hint">Demo tip: create an account, it's stored locally in your own database.</p>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>
