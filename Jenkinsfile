@@ -27,7 +27,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir('backend') {
-                    bat 'venv\\Scripts\\pytest --junitxml=test-results.xml'
+                    bat 'venv\\Scripts\\python -m pytest --junitxml=test-results.xml'
                 }
             }
             post {
